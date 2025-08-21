@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Piper TTS Demo</title>
+</head>
+<body>
+  <h1>Piper TTS Demo</h1>
+  <form id="tts-form">
+    <label for="text">Enter text:</label><br>
+    <textarea id="text" name="text" rows="4" cols="50">Welcome to the world of speech synthesis!</textarea><br>
+    <button type="submit">Synthesize</button>
+  </form>
+  <h2>Audio Output:</h2>
+  <audio id="audio" controls></audio>
+  <script>
+    document.getElementById('tts-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const text = document.getElementById('text').value;
+      const formData = new FormData();
+      formData.append('text', text);
+
+      const response = await fetch('/synthesize', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const audioUrl = URL.createObjectURL(blob);
+        document.getElementById('audio').src = audioUrl;
+      } else {
+        alert('Error synthesizing audio');
+      }
+    });
+  </script>
+</body>
+</html>

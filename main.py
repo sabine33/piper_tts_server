@@ -24,13 +24,16 @@ voice = PiperVoice.load(VOICE_PATH)
 
 @app.post("/synthesize")
 async def synthesize(text: str = Form(...)):
-    with wave.open("test.wav", "wb") as wav_file:
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav_file:
         voice.synthesize_wav(text, wav_file)
+    buffer.seek(0)
     return StreamingResponse(
-        open("test.wav", "rb"),
+        buffer,
         media_type="audio/wav",
         headers={"Content-Disposition": "inline; filename=output.wav"},
     )
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
